@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Optional: custom styles */
+
+:root {
+  color-scheme: dark;
+}
+
+/* html, body {
+  height: 100%;
+  background-color: #f9fafb;
+} */
+
+@import "@fontsource/inter/variable.css";
+html {
+  font-family: "InterVariable", system-ui, sans-serif;
+}
+
+body {
+  @apply bg-[#0f1117] text-gray-200;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+
+
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(122, 184, 154, 0.4);
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(122, 184, 154, 0.6);
+}
