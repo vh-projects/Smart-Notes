@@ -45,3 +45,39 @@ It saves all your documents and conversations, so you can revisit them anytime â
 
 ---
 
+##   Backend Setup
+
+* `cd backend`
+* `python -m venv venv`
+* `source venv/bin/activate  # or venv\Scripts\activate (Windows)`
+* `pip install -r requirements.txt`
+
+
+### Environment Variables
+
+Create a `.env` file in `backend/` with:
+
+  `QDRANT_URL=http://localhost:6333`  
+  `MONGO_URI=mongodb+srv://<your_user>:<your_pass>@cluster.mongodb.net/smartnotes`  
+  `GEMINI_API_KEY=your_google_gemini_api_key`
+
+
+Run command: `uvicorn app.main:app --reload`
+
+---
+
+##   Frontend Setup
+
+* `cd ../frontend`
+* `npm install`
+* `npm run dev`
+
+---
+
+##   Preview of Website
+
+
+![Upload Screen](./screenshots/upload-1.png)
+![Chat Window](./screenshots/chat-1.png)
+
+
