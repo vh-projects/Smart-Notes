@@ -57,7 +57,8 @@ It saves all your documents and conversations, so you can revisit them anytime â
 
 Create a `.env` file in `backend/` with:
 
-  `QDRANT_URL=http://localhost:6333`  
+  `QDRANT_URL=http://localhost:6333.cloud.qdrant.io`  
+  `QDRANT_API_KEY=jejhbfuefb-dkw-wecehcb.wehubuc-edwejhb`  
   `MONGO_URI=mongodb+srv://<your_user>:<your_pass>@cluster.mongodb.net/smartnotes`  
   `GEMINI_API_KEY=your_google_gemini_api_key`
 
@@ -76,8 +77,13 @@ Run command: `uvicorn app.main:app --reload`
 
 ##   Preview of Website
 
-
+### Landing Page:
+![Landing Page Screen](./screenshots/landing-1.png)
+---
+### Upload Section:
 ![Upload Screen](./screenshots/upload-1.png)
+---
+### Chat Window:
 ![Chat Window](./screenshots/chat-1.png)
-
+---
 
