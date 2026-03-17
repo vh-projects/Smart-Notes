@@ -12,14 +12,17 @@ from qdrant_client.http.models import Filter, FieldCondition, MatchValue
 from app.core.llm_engine import ask_gemini
 from app.core.mongo import conversations
 from qdrant_client import QdrantClient
-from app.core.config import QDRANT_URL
+from app.core.config import QDRANT_URL, QDRANT_API_KEY
 
 router = APIRouter()
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 # Qdrant Client
-qdrant_client = QdrantClient(url=QDRANT_URL)
+qdrant_client = QdrantClient(
+    url=QDRANT_URL,
+    api_key=QDRANT_API_KEY,
+    check_compatibility=False)
 
 # In-memory (for fallback)
 chat_histories = defaultdict(list)
@@ -213,14 +216,26 @@ async def query_pdf(doc_id: str = Form(...), question: str = Form(...)):
 
     # ✅ Vector Search
     question_vector = embedder.encode([question])[0].tolist()
-    hits = qdrant.search(
+    # hits = qdrant.search(
+    #     collection_name=COLLECTION_NAME,
+    #     query_vector=question_vector,
+    #     query_filter=Filter(
+    #         must=[FieldCondition(key="doc_id", match=MatchValue(value=doc_id))]
+    #     ),
+    #     limit=5,
+    # )
+
+
+    hits = qdrant_client.query_points(
         collection_name=COLLECTION_NAME,
-        query_vector=question_vector,
+        query=question_vector,
         query_filter=Filter(
             must=[FieldCondition(key="doc_id", match=MatchValue(value=doc_id))]
         ),
         limit=5,
-    )
+    ).points
+
+
     context = "\n".join([hit.payload["text"] for hit in hits])
     full_context = f"{structured_history}\n\n{context}"
 

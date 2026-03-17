@@ -8,9 +8,13 @@ from app.core.config import QDRANT_URL, QDRANT_API_KEY
 
 embedder = SentenceTransformer("all-MiniLM-L6-v2")
 
-qdrant = QdrantClient(QDRANT_URL, api_key=QDRANT_API_KEY)
+qdrant = QdrantClient(
+    url=QDRANT_URL,
+    api_key=QDRANT_API_KEY,
+    check_compatibility=False
+    )
 
-COLLECTION_NAME = "smartnotes_docs"
+COLLECTION_NAME = "smartnotes"
 BATCH_SIZE = 100  # batches of 100 vectors
 
 

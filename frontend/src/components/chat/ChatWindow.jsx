@@ -9,22 +9,6 @@ import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import "highlight.js/styles/github-dark.css";
 
-const CopyButton = ({ text }) => {
-  const [copied, setCopied] = useState(false);
-  const handleCopy = () => {
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-  return (
-    <button
-      onClick={handleCopy}
-      className="absolute top-2 right-2 text-xs px-2 py-1 bg-fern_green/30 text-timberwolf rounded hover:bg-fern_green/60 transition"
-    >
-      {copied ? "Copied!" : "Copy"}
-    </button>
-  );
-};
 
 export const ChatWindow = ({ chatId }) => {
   const [messages, setMessages] = useState([]);
@@ -103,11 +87,39 @@ export const ChatWindow = ({ chatId }) => {
   return (
     <div className="flex-1 flex flex-col bg-brunswick_green h-full overflow-hidden">
       <div className="flex-1 overflow-y-auto px-6 py-6 space-y-8 custom-scrollbar">
+
         {messages.length === 0 && !isLoading && (
-          <p className="text-timberwolf/60 text-center mt-20">
-            Ask a question about your PDF ✨
-          </p>
+          <div className="flex flex-col items-center justify-center h-full text-center px-4">
+
+            {/* Animated Heading */}
+            <motion.h1
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="text-3xl md:text-5xl font-bold tracking-tight text-timberwolf leading-tight text-center"
+            >
+              <motion.span
+                animate={{ opacity: [1, 0.85, 1] }}
+                transition={{ repeat: Infinity, duration: 2 }}
+              >
+                Ask. Discover.
+              </motion.span>
+
+              <br />
+
+              <motion.span
+                className="bg-gradient-to-r from-fern_green via-sage to-fern_green bg-clip-text text-transparent"
+                animate={{ opacity: [1, 0.7, 1] }}
+                transition={{ repeat: Infinity, duration: 2.5 }}
+              >
+                Understand.
+              </motion.span>
+            </motion.h1>
+
+          </div>
         )}
+
+
 
         {messages.map((msg, idx) => (
           <motion.div
@@ -115,11 +127,10 @@ export const ChatWindow = ({ chatId }) => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
-            className={`whitespace-pre-wrap overflow-hidden rounded-lg break-all ${
-              msg.role === "user"
-                ? "bg-fern_green text-timberwolf self-end max-w-[45%] ml-auto px-4 py-3"
-                : "bg-gradient-to-b from-hunter_green/90 to-hunter_green/70 text-timberwolf/95 shadow-xl border border-fern_green/20 max-w-4xl w-full self-center px-8 py-6"
-            }`}
+            className={`whitespace-pre-wrap overflow-hidden rounded-lg break-all ${msg.role === "user"
+              ? "bg-fern_green text-timberwolf self-end max-w-[45%] ml-auto px-4 py-3"
+              : "bg-gradient-to-b from-hunter_green/90 to-hunter_green/70 text-timberwolf/95 shadow-xl border border-fern_green/20 max-w-4xl w-full self-center px-8 py-6"
+              }`}
           >
             {msg.role === "assistant" ? (
               <div className="prose prose-invert max-w-none leading-relaxed text-[16px] break-all">
@@ -134,7 +145,7 @@ export const ChatWindow = ({ chatId }) => {
                           <pre {...props} className="overflow-x-auto">
                             <code className={className}>{codeText}</code>
                           </pre>
-                          <CopyButton text={codeText} />
+
                         </div>
                       ) : (
                         <code className="bg-[#1b1b1b] text-fern_green px-1.5 py-0.5 rounded break-all">
