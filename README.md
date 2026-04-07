@@ -83,6 +83,9 @@ Run command: `uvicorn app.main:app --reload`
 ### Upload Section:
 ![Upload Screen](./screenshots/upload-1.png)
 ---
+### Initial-Chat Window:
+![Initial-Chat Window](./screenshots/pre-chat-0.png)
+---
 ### Chat Window:
 ![Chat Window](./screenshots/chat-1.png)
 ---
