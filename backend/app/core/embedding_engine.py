@@ -15,8 +15,7 @@ qdrant = QdrantClient(
     )
 
 COLLECTION_NAME = "smartnotes"
-BATCH_SIZE = 100  # batches of 100 vectors
-
+BATCH_SIZE = 100
 
 
 def ensure_collection():
