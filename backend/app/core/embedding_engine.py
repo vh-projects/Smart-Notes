@@ -6,7 +6,12 @@ from qdrant_client.http.models import Distance, VectorParams
 from sentence_transformers import SentenceTransformer
 from app.core.config import QDRANT_URL, QDRANT_API_KEY
 
-embedder = SentenceTransformer("all-MiniLM-L6-v2")
+# embedder = SentenceTransformer("all-MiniLM-L6-v2")
+# embedder.save("models/all-MiniLM-L6-v2")
+
+
+MODEL_PATH = "app/core/models/all-MiniLM-L6-v2"
+embedder = SentenceTransformer(MODEL_PATH)
 
 qdrant = QdrantClient(
     url=QDRANT_URL,
@@ -35,7 +40,6 @@ def ensure_collection():
         field_name="doc_id",
         field_schema="keyword"
     )
-
 
 
 def embed_and_store(text_chunks, doc_id):

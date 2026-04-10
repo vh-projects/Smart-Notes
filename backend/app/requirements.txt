@@ -10,7 +10,10 @@ pypdf
 python-dotenv
 pdf2image 
 pytesseract
+pymongo
+typing
 
+langgraph
 langchain
 langchain-core
 langchain-community

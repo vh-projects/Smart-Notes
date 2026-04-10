@@ -1,5 +1,4 @@
 # app/api/routes.py
-
 from fastapi import APIRouter, UploadFile, Form, HTTPException
 from fastapi.responses import StreamingResponse
 import uuid, os, json, asyncio
@@ -9,10 +8,12 @@ from bson import ObjectId
 from app.core.pdf_processor import extract_text_from_pdf
 from app.core.embedding_engine import embed_and_store, embedder, qdrant, COLLECTION_NAME
 from qdrant_client.http.models import Filter, FieldCondition, MatchValue
-from app.core.llm_engine import ask_gemini
+# from app.core.llm_engine import ask_gemini
 from app.core.mongo import conversations
 from qdrant_client import QdrantClient
 from app.core.config import QDRANT_URL, QDRANT_API_KEY
+
+from app.graph.graph_builder import build_graph
 
 router = APIRouter()
 UPLOAD_DIR = "uploads"
@@ -122,42 +123,6 @@ async def get_all_chats():
 # ---------------------------------------------------
 # ✅ Delete Chat (Qdrant + Mongo + File)
 # ---------------------------------------------------
-# @router.delete("/chat/{chat_id}")
-# async def delete_chat(chat_id: str):
-#     try:
-#         chat = conversations.find_one({"_id": ObjectId(chat_id)})
-#         if not chat:
-#             raise HTTPException(status_code=404, detail="Chat not found")
-
-#         doc_id = chat.get("doc_id")
-#         qdrant_collection = chat.get("qdrant_collection")
-
-#         # ✅ Delete embeddings from Qdrant
-#         try:
-#             qdrant_client.delete(
-#                 collection_name=qdrant_collection,
-#                 points_selector=Filter(
-#                     must=[FieldCondition(key="doc_id", match=MatchValue(value=doc_id))]
-#                 ),
-#             )
-#         except Exception as e:
-#             print(f"⚠️ Qdrant delete failed: {e}")
-
-#         # ✅ Delete uploaded file
-#         file_path = chat.get("file_path")
-#         if file_path and os.path.exists(file_path):
-#             os.remove(file_path)
-
-#         # ✅ Delete from MongoDB
-#         conversations.delete_one({"_id": ObjectId(chat_id)})
-
-#         return {"status": "success", "message": "Chat deleted successfully"}
-
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=str(e))
-
-
-
 @router.delete("/chat/{chat_id}")
 async def delete_chat(chat_id: str):
     try:
@@ -193,12 +158,17 @@ async def delete_chat(chat_id: str):
 
 
 
-
 # ---------------------------------------------------
 # ✅ Chat Query Endpoint (Persistent Memory)
 # ---------------------------------------------------
 @router.post("/query")
 async def query_pdf(doc_id: str = Form(...), question: str = Form(...)):
+
+    print("API DEBUG → doc_id:", doc_id)
+    print("API DEBUG → question:", question)
+
+
+
     # ✅ Save user message
     conversations.update_one(
         {"doc_id": doc_id},
@@ -215,32 +185,61 @@ async def query_pdf(doc_id: str = Form(...), question: str = Form(...)):
     )
 
     # ✅ Vector Search
-    question_vector = embedder.encode([question])[0].tolist()
-    # hits = qdrant.search(
+    # question_vector = embedder.encode([question])[0].tolist()
+    
+    # hits = qdrant_client.query_points(
     #     collection_name=COLLECTION_NAME,
-    #     query_vector=question_vector,
+    #     query=question_vector,
     #     query_filter=Filter(
     #         must=[FieldCondition(key="doc_id", match=MatchValue(value=doc_id))]
     #     ),
     #     limit=5,
-    # )
+    # ).points
 
 
-    hits = qdrant_client.query_points(
-        collection_name=COLLECTION_NAME,
-        query=question_vector,
-        query_filter=Filter(
-            must=[FieldCondition(key="doc_id", match=MatchValue(value=doc_id))]
-        ),
-        limit=5,
-    ).points
+    # context = "\n".join([hit.payload["text"] for hit in hits])
+    # full_context = f"{structured_history}\n\n{context}"
+
+    # # ✅ LLM Response
+    # answer = ask_gemini(full_context, question)
+
+    graph= build_graph()
+    
+    print("FINAL → sending to graph:", {
+    "query": question,
+    "doc_id": doc_id
+})
+
+    # Run LangGraph
+    # result = graph.invoke({
+    #     "query": question,
+    #     "doc_id": doc_id
+    # })
 
 
-    context = "\n".join([hit.payload["text"] for hit in hits])
-    full_context = f"{structured_history}\n\n{context}"
 
-    # ✅ LLM Response
-    answer = ask_gemini(full_context, question)
+    initial_state = {
+        "query": str(question),
+        "doc_id": str(doc_id),
+        "history": structured_history,
+        "route": None,
+        "context": None,
+        "final_answer": None
+    }
+
+    print("FINAL STATE →", initial_state)
+
+    result = graph.invoke(initial_state)
+
+
+
+
+    answer = result["final_answer"]
+    context = result.get("context", "")
+
+# ------------
+
+
 
     # ✅ Save assistant response
     conversations.update_one(
@@ -248,10 +247,12 @@ async def query_pdf(doc_id: str = Form(...), question: str = Form(...)):
         {"$push": {"history": {"role": "assistant", "content": answer}}},
         upsert=True
     )
-
+    print("EVALUATION →", result.get("evaluation"))
     return {
         "answer": answer,
-        "context_used": context,
+        # "context_used": context,
+        "sources": result.get("sources", []),
+        "evaluation": result.get("evaluation", []),
         "history_count": len(history_list)
     }
 

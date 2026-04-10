@@ -4,14 +4,46 @@
 
 /* Optional: custom styles */
 
+
 :root {
   color-scheme: dark;
+
+  /* ── Base surfaces ── */
+  --color-base:        #0a0d06;   /* page background */
+  --color-surface-1:   #0f1409;   /* sidebar / panels */
+  --color-surface-2:   rgba(0,0,0,0.20); /* card overlays */
+
+  /* ── Accent (the lime) ── */
+  /* --color-accent:      #c6f135; */
+  --color-accent:      #c6f135;
+  
+  --lightsand: #FEF9D9;
+  --golden: #FFCF99; 
+
+  --blueshade: #0077b6;
+  --lighter-blueshade: #0a95df;
+  --glow-blueshade: rgba(10, 149, 223, 0.05);
+  --blueshade-rgb: 0, 119, 182;
+/* 0, 119, 182 */
+
+
+--glow-fluroscent:rgba(198,241,53,0.05);
+
+  /* ── Text ── */
+  --color-text-primary:   #f0ede4;
+  --color-text-secondary: rgba(240,237,228,0.55);
+  --color-text-muted:     rgba(240,237,228,0.25);
+  --color-text-faint:     rgba(240,237,228,0.12);
+
+  /* ── Borders ── */
+  --color-border:      rgba(255,255,255,0.05);
+  --color-border-mid:  rgba(255,255,255,0.08);
+  --color-border-accent: rgba(198,241,53,0.25);
 }
 
-/* html, body {
-  height: 100%;
-  background-color: #f9fafb;
-} */
+
+
+
 
 @import "@fontsource/inter/variable.css";
 html {
