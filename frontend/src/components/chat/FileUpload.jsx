@@ -140,6 +140,7 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Upload, Loader2, FileText } from "lucide-react";
+const API_BASE = import.meta.env.VITE_API_URL;
 
 export const FileUpload = ({ onFileUploaded }) => {
   const [file, setFile] = useState(null);
