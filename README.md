@@ -72,21 +72,4 @@ Run command: `uvicorn app.main:app --reload`
 * `cd ../frontend`
 * `npm install`
 * `npm run dev`
-
----
-
-##   Preview of Website
-
-### Landing Page:
-![Landing Page Screen](./screenshots/landing-1.png)
----
-### Upload Section:
-![Upload Screen](./screenshots/upload-1.png)
----
-### Initial-Chat Window:
-![Initial-Chat Window](./screenshots/pre-chat-0.png)
----
-### Chat Window:
-![Chat Window](./screenshots/chat-1.png)
----
-
+* 
