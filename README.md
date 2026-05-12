@@ -1,4 +1,4 @@
-# 🧠 SmartNotes – Your Intelligent PDF & Notes Assistant
+# <img width="30" height="30" alt="image" src="https://github.com/user-attachments/assets/99cf7748-6ccf-4356-81ab-6287571ad0cc" /> SmartNotes – Your Intelligent PDF & Notes Assistant
 
 SmartNotes is an AI-powered note-taking and document analysis web app.  
 Upload an **PDF**, and SmartNotes will extract, embed, and let you **chat with your notes**.  
