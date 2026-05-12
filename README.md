@@ -1,4 +1,4 @@
-# <img width="30" height="30" alt="image" src="https://github.com/user-attachments/assets/99cf7748-6ccf-4356-81ab-6287571ad0cc" /> # SmartNotes
+# <img width="30" height="30" alt="image" src="https://github.com/user-attachments/assets/99cf7748-6ccf-4356-81ab-6287571ad0cc" /> SmartNotes
 
 Your intelligent PDF & notes assistant — upload documents, ask questions, and pick up conversations exactly where you left off.
 
