@@ -92,16 +92,16 @@ export const InsightPanel = ({ insight }) => {
 
                 {/* Hallucination badge */}
                 <div className="mt-5 flex items-center gap-3">
-                  <div className={`w-2 h-2 rounded-full ${evaluation?.hallucination ? "bg-red-400" : "bg-[#c6f135]"}`}
+                  {/* <div className={`w-2 h-2 rounded-full ${evaluation?.hallucination ? "bg-red-400" : "bg-[#c6f135]"}`}
                     style={{ boxShadow: evaluation?.hallucination ? "0 0 6px rgba(248,113,113,0.6)" : "0 0 6px rgba(198,241,53,0.6)" }} />
                   <span className="text-[10px] tracking-widest uppercase"
                     style={{
                       fontFamily: "'Space Mono', monospace",
                       color: evaluation?.hallucination ? "rgba(248,113,113,0.7)" : "rgba(198,241,53,0.7)",
                     }}>
-                    {/* {evaluation?.hallucination ? "Hallucination risk" : "Grounded"} */} 
+                    {evaluation?.hallucination ? "Hallucination risk" : "Grounded"} 
                   </span>
-                </div>
+                </div> */}
               </div>
 
               {/* ── SOURCES ── */}
