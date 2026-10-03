@@ -99,7 +99,7 @@ export const InsightPanel = ({ insight }) => {
                       fontFamily: "'Space Mono', monospace",
                       color: evaluation?.hallucination ? "rgba(248,113,113,0.7)" : "rgba(198,241,53,0.7)",
                     }}>
-                    {evaluation?.hallucination ? "Hallucination risk" : "Grounded"}
+                    {/* {evaluation?.hallucination ? "Hallucination risk" : "Grounded"} */} 
                   </span>
                 </div>
               </div>
