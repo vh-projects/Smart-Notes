@@ -1,4 +1,4 @@
-# pdf_preprocessor.py
+# app/core/pdf_preprocessor.py
 
 import os
 from pypdf import PdfReader
@@ -43,10 +43,11 @@ def extract_text_from_pdf(file_path: str) -> str:
         except Exception as e:
             print(f"❌ Error processing page {page_num}: {e}")
 
-    full_text = "\n".join(text_output)
+    full_text = "\n\n".join(text_output)
     if not full_text.strip():
         print("⚠️ Warning: No text extracted from this PDF at all.")
     else:
         print(f"✅ Done! Extracted {len(full_text.split())} words total.")
 
     return full_text
+

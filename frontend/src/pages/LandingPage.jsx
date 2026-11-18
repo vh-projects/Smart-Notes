@@ -57,6 +57,10 @@ export default function LandingPage() {
       {/* Google Fonts */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Space+Mono:wght@400;700&family=Bebas+Neue&display=swap');
+
+        @import url('https://fonts.googleapis.com/css2?family=Darker+Grotesque:wght@300..900&family=Smooch+Sans:wght@100..900&display=swap');
+
+        @import url('https://fonts.googleapis.com/css2?family=Darker+Grotesque:wght@300..900&family=Junge&family=Smooch+Sans:wght@100..900&display=swap');
         .grid-bg {
           background-image:
             linear-gradient(rgba(198,241,53,0.04) 1px, transparent 1px),

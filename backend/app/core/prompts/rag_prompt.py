@@ -1,23 +1,27 @@
-# rag_prompt.py
+# app/core/prompts/rag_prompt.py
+
 from langchain_core.prompts import PromptTemplate
 
-
 rag_prompt = PromptTemplate(
-    input_variables=["context", "query"],
-    template=(
-        "You are a document intelligence system.\n"
-        "Answer ONLY using the provided context.\n"
-        "If answer is not present, say: 'Not in document'.\n\n"
+    input_variables=["context", "query", "history"],
+    template="""You are a technical documentation assistant with access to specific document content.
 
-        "Keep response concise:\n"
-        "- Short explanation\n"
-        "- Bullet points if useful\n"
-        "- Max 120 words\n\n"
+**Retrieved Context:**
+{context}
 
-        "Avoid repeating the question.\n\n"
+**Conversation History:**
+{history}
 
-        "Context:\n{context}\n\n"
-        "Question:\n{query}\n\n"
-        "Answer:"
-    )
+**Current Question:** {query}
+
+**Instructions:**
+1. Answer ONLY using information from the Retrieved Context above
+2. If the context contains relevant information, provide a clear, well-structured answer
+3. Use technical terminology appropriately and explain concepts step-by-step
+4. If the context is incomplete but contains partial information, state what you know and what's missing
+5. NEVER make up information not present in the context
+6. If tables/data are in the context, present them clearly
+7. Reference specific sections when helpful (e.g., "According to the context...")
+
+**Answer:**"""
 )

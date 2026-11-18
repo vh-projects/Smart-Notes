@@ -1,41 +1,32 @@
-# # app/graph/rag_agent.py
-# from app.core.rag_service import get_rag_context
-
-# def rag_agent_node(state):
-
-#     print("DEBUG → state received:", state)
-
-#     query= state["query"]
-#     doc_id= state["doc_id"]
-#     print("DEBUG → query:", query)
-#     print("DEBUG → doc_id:", doc_id)
-
-#     context, sources= get_rag_context(query, doc_id)
-#     print("DEBUG → context:", context[:200] if context else "EMPTY")
-
-#     return { 
-#         **state,
-#         "context": context,
-#         "sources": sources
-#     }
-
-
-
+# app/graph/nodes/rag_agent.py
 
 def rag_agent_node(state):
+    """
+    Context is already fetched by router_node.
+    This node exists to rerank or validate — keeps the graph extensible.
+    Right now it passes state through; add reranking here later.
+    """
 
-    print("DEBUG → state received:", state)
+    # print("DEBUG → state received:", state)
 
     # ✅ context already comes from router now
-    context = state.get("context")
-    sources = state.get("sources")
+    context = state.get("context", "")
+    sources = state.get("sources", [])
+    score= state.get("score", 0.0)
 
-    print("DEBUG → context:", context[:200] if context else "EMPTY")
+    print(f"RAG AGENT → context length: {len(context)} | score: {score:.3f}")
+
+    if not context:
+        # Fallback: if somehow context is empty, reroute to general
+        return {
+            **state,
+            "route": "general",
+        }
 
     return {
         **state,
-        "context": context,
-        "sources": sources
+        # "context": context,
+        # "sources": sources
     }
 
 

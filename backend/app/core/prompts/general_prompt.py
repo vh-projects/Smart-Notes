@@ -1,3 +1,5 @@
+# app/core/prompts/general_prompt
+
 from langchain_core.prompts import PromptTemplate
 
 

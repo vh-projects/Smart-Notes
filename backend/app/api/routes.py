@@ -1,19 +1,21 @@
 # app/api/routes.py
+
 from fastapi import APIRouter, UploadFile, Form, HTTPException
 from fastapi.responses import StreamingResponse
-import uuid, os, json, asyncio
+import uuid, os, json, asyncio, time
 from collections import defaultdict
 from bson import ObjectId
 
 from app.core.pdf_processor import extract_text_from_pdf
 from app.core.embedding_engine import embed_and_store, embedder, qdrant, COLLECTION_NAME
 from qdrant_client.http.models import Filter, FieldCondition, MatchValue
-# from app.core.llm_engine import ask_gemini
 from app.core.mongo import conversations
 from qdrant_client import QdrantClient
 from app.core.config import QDRANT_URL, QDRANT_API_KEY
 
 from app.graph.graph_builder import build_graph
+
+from app.core.text_splitter import split_text
 
 router = APIRouter()
 UPLOAD_DIR = "uploads"
@@ -41,8 +43,24 @@ async def upload_pdf(file: UploadFile):
         f.write(await file.read())
 
     text = extract_text_from_pdf(file_path)
-    chunks = [text[i:i + 1000] for i in range(0, len(text), 1000)]
-    embed_and_store(chunks, doc_id)
+
+    # chunks = [text[i:i + 1000] for i in range(0, len(text), 1000)]
+    chunks= split_text(text)
+
+    # ✅ STEP 4: Limit chunks
+    MAX_CHUNKS = 300
+    if len(chunks) > MAX_CHUNKS:
+        print(f"⚠️ Too many chunks ({len(chunks)}), trimming to {MAX_CHUNKS}")
+        chunks = chunks[:MAX_CHUNKS]
+
+
+
+    try:
+        await asyncio.to_thread(embed_and_store, chunks, doc_id)
+    except RuntimeError as e:
+        # ✅ surface embedding failures instead of silently succeeding
+        raise HTTPException(status_code=500, detail=f"Embedding failed: {str(e)}")
+
 
     # ✅ Create MongoDB record
     conversations.insert_one({
@@ -51,7 +69,7 @@ async def upload_pdf(file: UploadFile):
         "file_path": file_path,
         "qdrant_collection": COLLECTION_NAME,
         "history": [],
-        "created_at": asyncio.get_event_loop().time(),
+        "created_at": time.time(),
     })
 
     return {"doc_id": doc_id, "message": "PDF uploaded and processed successfully."}
@@ -62,6 +80,7 @@ async def upload_pdf(file: UploadFile):
 # ---------------------------------------------------
 @router.post("/upload-stream")
 async def upload_stream(file: UploadFile):
+
     doc_id = str(uuid.uuid4())
     file_path = os.path.join(UPLOAD_DIR, f"{doc_id}.pdf")
 
@@ -72,19 +91,35 @@ async def upload_stream(file: UploadFile):
     async def generate_upload_events():
         try:
             yield f"data: {json.dumps({'status': '✅ File uploaded successfully. Starting processing...'})}\n\n"
-            await asyncio.sleep(0.5)
+            await asyncio.sleep(0.3)
 
             yield f"data: {json.dumps({'status': '📄 Extracting text from PDF...'})}\n\n"
             text = extract_text_from_pdf(file_path)
-            await asyncio.sleep(0.5)
 
-            yield f"data: {json.dumps({'status': '🧠 Generating embeddings...'})}\n\n"
-            chunks = [text[i:i + 1000] for i in range(0, len(text), 1000)]
-            await asyncio.sleep(0.5)
+            yield f"data: {json.dumps({'status': '📊 Chunking document...'})}\n\n"
+            chunks = split_text(text)
+            
+            MAX_CHUNKS = 300
+            if len(chunks) > MAX_CHUNKS:
+                print(f"⚠️ Too many chunks ({len(chunks)}), trimming to {MAX_CHUNKS}")
+                chunks = chunks[:MAX_CHUNKS]
 
-            yield f"data: {json.dumps({'status': '💾 Storing vectors into database...'})}\n\n"
-            embed_and_store(chunks, doc_id)
-            await asyncio.sleep(0.5)
+            # await asyncio.sleep(0.3)
+
+            yield f"data: {json.dumps({'status': f'🧠 Embedding {len(chunks)} chunks...'})}\n\n"
+
+            try:
+                await asyncio.to_thread(embed_and_store, chunks, doc_id)
+
+            except RuntimeError as e:
+                # ✅ stream the error back to frontend instead of silent failure
+                yield f"data: {json.dumps({'status': f'❌ Embedding error: {str(e)}'})}\n\n"
+                yield "event: end\ndata: {}\n\n"
+                return                
+
+
+
+            # await asyncio.sleep(0.3)
 
             # ✅ Save chat info to MongoDB
             conversations.insert_one({
@@ -93,7 +128,7 @@ async def upload_stream(file: UploadFile):
                 "file_path": file_path,
                 "qdrant_collection": COLLECTION_NAME,
                 "history": [],
-                "created_at": asyncio.get_event_loop().time(),
+                "created_at": time.time(),
             })
 
             yield f"data: {json.dumps({'status': '🎉 Done! You’re good to go.', 'doc_id': doc_id})}\n\n"
@@ -164,9 +199,8 @@ async def delete_chat(chat_id: str):
 @router.post("/query")
 async def query_pdf(doc_id: str = Form(...), question: str = Form(...)):
 
-    print("API DEBUG → doc_id:", doc_id)
-    print("API DEBUG → question:", question)
-
+    print(f"API DEBUG → doc_id: {doc_id} | question: {question} ")
+    
 
 
     # ✅ Save user message
@@ -185,37 +219,14 @@ async def query_pdf(doc_id: str = Form(...), question: str = Form(...)):
     )
 
     # ✅ Vector Search
-    # question_vector = embedder.encode([question])[0].tolist()
-    
-    # hits = qdrant_client.query_points(
-    #     collection_name=COLLECTION_NAME,
-    #     query=question_vector,
-    #     query_filter=Filter(
-    #         must=[FieldCondition(key="doc_id", match=MatchValue(value=doc_id))]
-    #     ),
-    #     limit=5,
-    # ).points
-
-
-    # context = "\n".join([hit.payload["text"] for hit in hits])
-    # full_context = f"{structured_history}\n\n{context}"
-
-    # # ✅ LLM Response
-    # answer = ask_gemini(full_context, question)
-
     graph= build_graph()
     
+
+    # remove later
     print("FINAL → sending to graph:", {
     "query": question,
     "doc_id": doc_id
-})
-
-    # Run LangGraph
-    # result = graph.invoke({
-    #     "query": question,
-    #     "doc_id": doc_id
-    # })
-
+    })
 
 
     initial_state = {
@@ -227,21 +238,17 @@ async def query_pdf(doc_id: str = Form(...), question: str = Form(...)):
         "final_answer": None
     }
 
+    # remove later
     print("FINAL STATE →", initial_state)
 
     result = graph.invoke(initial_state)
 
-
-
-
     answer = result["final_answer"]
-    context = result.get("context", "")
+    # context = result.get("context", "")
 
 # ------------
 
-
-
-    # ✅ Save assistant response
+    # Save assistant response
     conversations.update_one(
         {"doc_id": doc_id},
         {"$push": {"history": {"role": "assistant", "content": answer}}},

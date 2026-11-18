@@ -13,9 +13,12 @@ pytesseract
 pymongo
 typing
 
+langchain-nvidia-ai-endpoints
+
 langgraph
 langchain
 langchain-core
+langchain-text-splitters
 langchain-community
 langchain-google-genai
 google-generativeai

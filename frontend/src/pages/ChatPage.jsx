@@ -84,15 +84,11 @@ export default function ChatPage() {
             linear-gradient(90deg, rgba(198,241,53,0.03) 1px, transparent 1px);
           background-size: 60px 60px;
         }
-        .custom-scrollbar::-webkit-scrollbar { width: 3px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(198,241,53,0.2); border-radius: 2px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(198,241,53,0.4); }
+
       `}</style>
 
       <div className="h-screen flex grid-bg overflow-hidden"
         style={{ background: "#0a0d06", color: "#f0ede4" }}>
-
         {/* LEFT — Sidebar */}
         <Sidebar
           chats={chats}

@@ -1,38 +1,80 @@
-from app.core.llm_engine import llm
-from app.core.prompts.rag_prompt import rag_prompt
+# # app/graph/nodes/synthesizer.py
+
 from langchain_core.output_parsers import StrOutputParser
 
-def synthesizer_node(state):
-    query= state["query"]
-    context= state.get("context", "")
-    history= state.get("histroy", "")
+from app.core.llm_engine import (
+    llm,
+    get_streaming_llm,
+)
 
-    general_answer = state.get("general_answer")
+from app.core.prompts.general_prompt import general_prompt
+from app.core.prompts.hybrid_prompt import hybrid_prompt
+from app.core.prompts.rag_prompt import rag_prompt
 
-    # If general route, skip RAG context
-    if state.get("route") == "general":
-        return {
-            **state,
-            "final_answer": general_answer or "No answer generated."
-        }
 
-    full_context= f"""
-    Conversation History: 
-    {history}
-
-    Retrieved Context: 
-    {context}
+def _select_prompt(route: str):
     """
-    
-   
+    Select prompt according to router decision.
+    """
 
-    chain = rag_prompt | llm | StrOutputParser()
-    answer = chain.invoke({
-        "context": full_context,
-        "query": query
-    })
-    
+    if route == "general":
+        return general_prompt
+
+    if route == "hybrid":
+        return hybrid_prompt
+
+    return rag_prompt
+
+
+# ---------------------------------------------------------
+# Sync version
+# ---------------------------------------------------------
+
+def synthesizer_node(state):
+
+    route = state.get("route")
+
+    prompt = _select_prompt(route)
+
+    chain = prompt | llm | StrOutputParser()
+
+    answer = chain.invoke(
+        {
+            "query": state.get("query", ""),
+            "context": state.get("context", ""),
+            "history": state.get("history", ""),
+        }
+    )
+
     return {
         **state,
         "final_answer": answer.strip()
-    } 
+    }
+
+
+# ---------------------------------------------------------
+# Streaming version
+# ---------------------------------------------------------
+
+async def synthesizer_stream(state):
+
+    route = state.get("route")
+
+    prompt = _select_prompt(route)
+
+    stream_llm = get_streaming_llm()
+
+    chain = prompt | stream_llm
+
+    async for chunk in chain.astream(
+        {
+            "query": state.get("query", ""),
+            "context": state.get("context", ""),
+            "history": state.get("history", ""),
+        }
+    ):
+
+        if hasattr(chunk, "content") and chunk.content:
+            yield chunk.content
+
+

@@ -1,13 +1,18 @@
-from typing import TypedDict, Optional
+# app/graph/state.py
+
+from typing import Optional, List, TypedDict
+
 
 class GraphState(TypedDict):
+
     query: str
-    doc_id:str
+    doc_id: str
 
     route: Optional[str]
 
     context: Optional[str]
-    sources: Optional[str]
+    sources: Optional[List]
+    score: Optional[float]
 
     history: Optional[str]
 

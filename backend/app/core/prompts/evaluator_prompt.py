@@ -1,31 +1,21 @@
-# evaluator_prompt.py
+# app/core/prompts/evaluator_prompt.py
 
 from langchain_core.prompts import PromptTemplate
 
 evaluator_prompt = PromptTemplate(
     input_variables=["query", "answer", "context"],
-    template="""
-Evaluate the AI response.
+    template="""You are a JSON-only evaluator. Output a single JSON object. No other text.
 
-Rules:
-- Be strict
-- Output ONLY valid JSON
-- No explanation
 
-Query:
-{query}
+Query: {query}
+Answer: {answer}
+Context (first 600 chars): {context}
 
-Answer:
-{answer}
 
-Context:
-{context}
+Score these three fields:
+- hallucination (bool): true if answer contains facts NOT in context
+- context_usage (float 0-1): how much the answer uses the context
+- relevance_score (float 0-1): how well the answer addresses the query
 
-Return:
-{
-  "relevance_score": number (0 to 1),
-  "context_usage": number (0 to 1),
-  "hallucination": true/false
-}
-"""
-)
+JSON:
+""")

@@ -1,99 +1,8 @@
-// // Sidebar.jsx
-
-// import { Button } from "@/components/ui/button";
-// import { ScrollArea } from "@/components/ui/scroll-area";
-// import { Plus, Trash2 } from "lucide-react";
-// import { motion } from "framer-motion";
-
-// export const Sidebar = ({
-//   chats,
-//   activeChat,
-//   setActiveChat,
-//   onAddChat,
-//   onDeleteChat,
-// }) => {
-//   const handleDelete = (e, id, name) => {
-//     e.stopPropagation();
-//     if (window.confirm(`Are you sure you want to delete "${name}"?`)) {
-//       onDeleteChat(id); // ✅ Call parent function only
-//     }
-//   };
-
-//   return (
-//     <div className="w-72 bg-brunswick_green border-r border-fern_green flex flex-col">
-//       {/* Header Section */}
-//       <div className="p-4 border-b border-fern_green flex justify-between items-center">
-//         <h2 className="font-semibold text-timberwolf text-lg">My Chats</h2>
-//         <Button
-//           variant="outline"
-//           size="icon"
-//           onClick={onAddChat}
-//           className="rounded-lg bg-brunswick_green text-timberwolf hover:bg-fern_green hover:text-timberwolf transition-colors"
-//         >
-//           <Plus size={18} />
-//         </Button>
-//       </div>
-
-//       {/* Chat List */}
-//       <ScrollArea className="flex-1">
-//         {chats.length === 0 ? (
-//           <p className="text-timberwolf/70 text-sm text-center mt-10">
-//             No chats yet. Upload a PDF to start.
-//           </p>
-//         ) : (
-//           <ul className="p-2 space-y-2">
-//             {chats.map((chat) => (
-//               <motion.li
-//                 key={chat.id}
-//                 initial={{ opacity: 0, x: -10 }}
-//                 animate={{ opacity: 1, x: 0 }}
-//                 transition={{ duration: 0.2 }}
-//                 className={`group relative px-3 py-2 rounded-lg cursor-pointer transition select-none ${
-//                   activeChat === chat.id
-//                     ? "bg-fern_green text-timberwolf"
-//                     : "hover:bg-hunter_green text-timberwolf/90"
-//                 }`}
-//                 onClick={() => setActiveChat(chat.id)}
-//               >
-//                 <div className="pr-8 overflow-hidden">
-//                   <span className="block truncate">{chat.name}</span>
-//                 </div>
-
-//                 <div
-//                   className="absolute right-3 top-1/2 -translate-y-1/2"
-//                   onClick={(e) => handleDelete(e, chat.id, chat.name)}
-//                 >
-//                   <Trash2
-//                     size={16}
-//                     className="text-sage opacity-70 hover:opacity-100 hover:text-timberwolf transition-opacity duration-150"
-//                   />
-//                 </div>
-//               </motion.li>
-//             ))}
-//           </ul>
-//         )}
-//       </ScrollArea>
-//     </div>
-//   );
-// };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// Sidebar.jsx
 
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Trash2 } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 
 export const Sidebar = ({ chats, activeChat, setActiveChat, onAddChat, onDeleteChat }) => {
   return (
@@ -103,11 +12,15 @@ export const Sidebar = ({ chats, activeChat, setActiveChat, onAddChat, onDeleteC
       {/* Top brand strip */}
       <div className="px-5 py-5 border-b flex items-center justify-between"
         style={{ borderColor: "rgba(255,255,255,0.05)" }}>
+
         <div>
-          <p className="text-[9px] tracking-[0.35em] uppercase mb-1"
-            style={{ fontFamily: "'Space Mono', monospace", color: "rgba(198,241,53,0.5)" }}>
-            SmartNotes
-          </p>
+          <Link to="/">
+            <p className="text-[11px] tracking-[0.35em] uppercase mb-1"
+              style={{ fontFamily: "'Space Mono', monospace", color: "var(--lighter-blueshade)" }}
+            >
+              SmartNotes
+            </p>
+          </Link>
           <p className="text-[11px] tracking-[0.2em] uppercase"
             style={{ fontFamily: "'Space Mono', monospace", color: "rgba(240,237,228,0.3)" }}>
             My Documents
@@ -119,7 +32,7 @@ export const Sidebar = ({ chats, activeChat, setActiveChat, onAddChat, onDeleteC
           style={{ borderColor: "rgba(255,255,255,0.1)" }}
           title="New upload">
           <Plus size={13} style={{ color: "rgba(240,237,228,0.4)" }}
-            className="group-hover:text-[#c6f135] transition-colors" />
+            className="group-hover:text-[--lighter-blueshade] transition-colors" />
         </button>
       </div>
 
@@ -140,27 +53,33 @@ export const Sidebar = ({ chats, activeChat, setActiveChat, onAddChat, onDeleteC
                 transition={{ delay: i * 0.05, duration: 0.3 }}
                 onClick={() => setActiveChat(chat.id)}
                 className="group relative px-3 py-3 cursor-pointer transition-all duration-200 rounded-sm"
+
                 style={{
                   background: activeChat === chat.id
-                    ? "rgba(198,241,53,0.07)" : "transparent",
+                    ? "var(--side-blueshade)" : "transparent",
                   borderLeft: activeChat === chat.id
-                    ? "2px solid rgba(198,241,53,0.6)" : "2px solid transparent",
+                    ? "2px solid var(--lighter-blueshade)" : "2px solid transparent",
                 }}>
+
+
 
                 {/* doc icon */}
                 <div className="flex items-start gap-2">
                   <div className="mt-0.5 flex-shrink-0 w-4 h-5 relative">
+
                     <div className="w-full h-full border"
-                      style={{ borderColor: activeChat === chat.id ? "rgba(198,241,53,0.4)" : "rgba(255,255,255,0.15)" }} />
+                      style={{ borderColor: activeChat === chat.id ? "var(--blueshade)" : "rgba(255,255,255,0.15)" }} />
+
                     <div className="absolute top-0 right-0 w-1.5 h-1.5"
-                      style={{ borderLeft: "1px solid rgba(0,0,0,0.5)", borderBottom: "1px solid rgba(0,0,0,0.5)", background: activeChat === chat.id ? "rgba(198,241,53,0.3)" : "rgba(255,255,255,0.1)" }} />
+                      style={{ borderLeft: "1px solid rgba(0,0,0,0.5)", borderBottom: "1px solid rgba(0,0,0,0.5)", background: activeChat === chat.id ? "var(--blueshade)" : "rgba(255,255,255,0.1)" }} />
+
                   </div>
 
                   <div className="flex-1 min-w-0">
                     <p className="truncate text-[11px] leading-tight"
                       style={{
                         fontFamily: "'Space Mono', monospace",
-                        color: activeChat === chat.id ? "#c6f135" : "rgba(240,237,228,0.55)",
+                        color: activeChat === chat.id ? "var(--blueshade)" : "rgba(240,237,228,0.55)",
                       }}>
                       {chat.name}
                     </p>

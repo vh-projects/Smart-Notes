@@ -1,7 +1,8 @@
 // InsightPanel.jsx
 import { motion, AnimatePresence } from "framer-motion";
 
-const ScoreBar = ({ value, label, color = "#c6f135" }) => {
+// const ScoreBar = ({ value, label, color = "#c6f135" }) => {
+const ScoreBar = ({ value, label, color = "var(--lighter-blueshade)" }) => {
   const pct = Math.round((parseFloat(value) || 0) * 100);
   return (
     <div className="space-y-1">
@@ -28,7 +29,8 @@ const ScoreBar = ({ value, label, color = "#c6f135" }) => {
 const SectionLabel = ({ children }) => (
   <div className="flex items-center gap-3 mb-4">
     <span className="text-[9px] tracking-[0.3em] uppercase"
-      style={{ fontFamily: "'Space Mono', monospace", color: "rgba(198,241,53,0.45)" }}>
+      // style={{ fontFamily: "'Space Mono', monospace", color: "rgba(198,241,53,0.45)" }}>
+      style={{ fontFamily: "'Space Mono', monospace", color: "var(--lighter-blueshade)" }}>
       {children}
     </span>
     <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.04)" }} />
@@ -47,7 +49,9 @@ export const InsightPanel = ({ insight }) => {
       <div className="px-5 py-5 border-b"
         style={{ borderColor: "rgba(255,255,255,0.05)" }}>
         <p className="text-[9px] tracking-[0.35em] uppercase mb-1"
-          style={{ fontFamily: "'Space Mono', monospace", color: "rgba(198,241,53,0.5)" }}>
+          // style={{ fontFamily: "'Space Mono', monospace", color: "rgba(198,241,53,0.5)" }}>
+          style={{ fontFamily: "'Space Mono', monospace", color: "var(--lighter-blueshade)" }}>
+
           System
         </p>
         <p className="text-[11px] tracking-[0.2em] uppercase"
@@ -81,23 +85,28 @@ export const InsightPanel = ({ insight }) => {
                   <ScoreBar
                     label="Confidence"
                     value={evaluation?.relevance_score}
-                    color="#c6f135"
+                    // color="#c6f135"
+                    color="var(--blueshade)"
                   />
                   <ScoreBar
                     label="Context usage"
                     value={evaluation?.context_usage}
-                    color="rgba(198,241,53,0.5)"
+                    // color="rgba(198,241,53,0.5)"
+                    color="var(--blueshade)"
                   />
                 </div>
 
                 {/* Hallucination badge */}
                 <div className="mt-5 flex items-center gap-3">
-                  {/* <div className={`w-2 h-2 rounded-full ${evaluation?.hallucination ? "bg-red-400" : "bg-[#c6f135]"}`}
-                    style={{ boxShadow: evaluation?.hallucination ? "0 0 6px rgba(248,113,113,0.6)" : "0 0 6px rgba(198,241,53,0.6)" }} />
+                  <div className={`w-2 h-2 rounded-full ${evaluation?.hallucination ? "bg-red-400" : "bg-[#c6f135]"}`}
+                    // style={{ boxShadow: evaluation?.hallucination ? "0 0 6px rgba(248,113,113,0.6)" : "0 0 6px rgba(198,241,53,0.6)" }} />
+                    style={{ boxShadow: evaluation?.hallucination ? "0 0 6px rgba(248,113,113,0.6)" : "0 0 6px var(--blueshade)" }} />
+
                   <span className="text-[10px] tracking-widest uppercase"
                     style={{
                       fontFamily: "'Space Mono', monospace",
-                      color: evaluation?.hallucination ? "rgba(248,113,113,0.7)" : "rgba(198,241,53,0.7)",
+                      // color: evaluation?.hallucination ? "rgba(248,113,113,0.7)" : "rgba(198,241,53,0.7)",
+                      color: evaluation?.hallucination ? "rgba(248,113,113,0.7)" : "var(--lighter-blueshade)",
                     }}>
                     {evaluation?.hallucination ? "Hallucination risk" : "Grounded"} 
                   </span>
@@ -110,14 +119,17 @@ export const InsightPanel = ({ insight }) => {
                   <SectionLabel>Retrieved Sources</SectionLabel>
 
                   <div className="space-y-3">
-                    {sources.slice(0, 3).map((s, i) => (
+                    {/* {sources.slice(0, 3).map((s, i) => ( */}
+                      {sources?.filter(Boolean).slice(0, 3).map((s, i) => (
                       <motion.div key={i}
                         initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.08 }}
                         className="relative pl-3"
-                        style={{ borderLeft: "1px solid rgba(198,241,53,0.2)" }}>
+                        // style={{ borderLeft: "1px solid rgba(198,241,53,0.2)" }}>
+                        style={{ borderLeft: "1px solid var(--lighter-blueshade)" }}>
                         <p className="text-[9px] tracking-[0.2em] uppercase mb-1"
-                          style={{ fontFamily: "'Space Mono', monospace", color: "rgba(198,241,53,0.4)" }}>
+                          // style={{ fontFamily: "'Space Mono', monospace", color: "rgba(198,241,53,0.4)" }}>
+                          style={{ fontFamily: "'Space Mono', monospace", color: "var(--blueshade)" }}>
                           Chunk {i + 1}
                         </p>
                         <p className="text-[11px] leading-relaxed line-clamp-4"
@@ -127,7 +139,8 @@ export const InsightPanel = ({ insight }) => {
                             color: "rgba(240,237,228,0.4)",
                             lineHeight: "1.6",
                           }}>
-                          {s.text || s}
+                          {/* {s.text || s} */}
+                          {typeof s === "string" ? s : s?.text || "No preview available"}
                         </p>
                       </motion.div>
                     ))}
@@ -140,7 +153,7 @@ export const InsightPanel = ({ insight }) => {
                 <SectionLabel>System</SectionLabel>
                 <div className="space-y-2">
                   {[
-                    ["Model", "Claude / RAG"],
+                    ["Model", "Gemini / RAG"],
                     ["Retrieval", "Semantic"],
                     ["Storage", "Qdrant + Mongo"],
                   ].map(([k, v]) => (

@@ -1095,4 +1095,3 @@ export const ChatWindow = ({ chatId, onInsightUpdate }) => {
     </div>
   );
 };
-
