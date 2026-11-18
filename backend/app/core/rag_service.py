@@ -20,7 +20,7 @@ def get_rag_context(query, doc_id, top_k=5):
         collection_name=COLLECTION_NAME,
         query=query_vector,
         limit=top_k,
-        score_threshold=0.25,  #✅ LOWERED from 0.35 — better recall
+        score_threshold=0.25,  # ✅ LOWERED from 0.35 — better recall
         query_filter=Filter(
             must=[FieldCondition(key="doc_id", match=MatchValue(value=doc_id))]
         )

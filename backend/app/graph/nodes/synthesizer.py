@@ -1,10 +1,10 @@
-# # app/graph/nodes/synthesizer.py
+# app/graph/nodes/synthesizer.py
+
 
 from langchain_core.output_parsers import StrOutputParser
 
 from app.core.llm_engine import (
-    llm,
-    get_streaming_llm,
+    llm, get_streaming_llm,
 )
 
 from app.core.prompts.general_prompt import general_prompt

@@ -1,23 +1,4 @@
-# # app/graph/nodes/general_agent.py
-
-# from app.core.llm_engine import llm
-# from langchain_core.output_parsers import StrOutputParser
-# from app.core.prompts.general_prompt import general_prompt
-
-
-# def general_agent_node(state):
-#     query = state.get("query")
-
-#     chain = general_prompt | llm | StrOutputParser()
-#     response = chain.invoke({"query": query})
-
-#     return {
-#         **state,
-#         "general_answer": response.strip()
-#     }
-    
-
-
+# app/graph/nodes/general_agent.py
 
 from langchain_core.output_parsers import StrOutputParser
 
